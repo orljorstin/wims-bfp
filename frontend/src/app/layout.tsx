@@ -12,8 +12,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/bfp-logo.ico",
     shortcut: "/bfp-logo.ico",
-    apple: "/bfp-logo.svg", // SVG often supported/scaled for apple touch or use png if available
+    apple: "/bfp-logo.png",
   },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
