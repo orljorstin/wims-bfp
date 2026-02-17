@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/bfp-logo.ico",
     shortcut: "/bfp-logo.ico",
-    apple: "/bfp-logo.png",
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.webmanifest",
 };

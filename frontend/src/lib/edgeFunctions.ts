@@ -41,6 +41,7 @@ export interface Incident {
         incident_type: string;
         notification_dt: string;
         barangay: string;
+        barangay_id?: number; // Added to match schema
         city_id: number;
         district_id: number;
         province_id: number;
