@@ -78,6 +78,45 @@ INSERT INTO wims.security_threat_logs (
     0.99,
     NULL,
     NULL
+),
+-- 6. High Severity: Escalate Demo
+(
+    NOW() - INTERVAL '5 hours',
+    '33.44.55.66',
+    '10.0.0.5',
+    2019402,
+    'HIGH',
+    '{"proto": "TCP", "event_type": "alert", "alert": {"signature": "ET EXPLOIT Possible CVE-2023-XXXX", "category": "Attempted Administrator Privilege Gain"}, "payload": "...malicious payload..."}',
+    'Pattern matching newly published CVE in edge deployment. Immediate escalation required. Automated containment initiated.',
+    0.91,
+    NULL,
+    NULL
+),
+-- 7. Low Severity: False Positive Demo
+(
+    NOW() - INTERVAL '6 hours',
+    '10.0.0.100',
+    '10.0.0.5',
+    2100499,
+    'LOW',
+    '{"proto": "UDP", "event_type": "alert", "alert": {"signature": "ET MALWARE Suspicious DNS Query", "category": "A Network Trojan was detected"}, "payload": "DNS query for unknown.local"}',
+    'Suspicious DNS query detected. However, upon further context analysis, this domain belongs to an internal logging service that recently updated its hostname structure. Likely benign.',
+    0.45,
+    NULL,
+    NULL
+),
+-- 8. Medium Severity: Resolved Demo
+(
+    NOW() - INTERVAL '1 day',
+    '203.0.113.88',
+    '10.0.0.5',
+    2002879,
+    'MEDIUM',
+    '{"proto": "TCP", "event_type": "alert", "alert": {"signature": "ET SCAN Directory Traversal Attempt", "category": "Web Application Attack"}, "payload": "GET /images/../../../../etc/passwd HTTP/1.1"}',
+    'Classic directory traversal string in GET request. Filter blocked the request successfully, no data exfiltrated.',
+    0.89,
+    NULL,
+    NULL
 );
 
 -- Note: The subquery for `reviewed_by` might return NULL if no SYSTEM_ADMIN exists yet, which is fine.

@@ -22,6 +22,20 @@ interface SecurityThreatLog {
     reviewed_by: string | null;
 }
 
+const getActionBadge = (action: string | null) => {
+    if (!action) return <span className="text-gray-400 italic">Unreviewed</span>;
+    switch (action) {
+        case 'RESOLVED':
+            return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 text-green-700 border border-green-200 text-xs font-bold"><CheckCircle className="w-3.5 h-3.5" /> RESOLVED</span>;
+        case 'FALSE_POSITIVE':
+            return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-700 border border-gray-300 text-xs font-bold"><XCircle className="w-3.5 h-3.5" /> FALSE POSITIVE</span>;
+        case 'ESCALATED':
+            return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-red-50 text-red-700 border border-red-200 text-xs font-bold"><AlertTriangle className="w-3.5 h-3.5" /> ESCALATED</span>;
+        default:
+            return <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold"><CheckCircle className="w-3.5 h-3.5" /> {action}</span>;
+    }
+};
+
 export default function SecurityPage() {
     const { user, role, loading } = useUserProfile();
     const [logs, setLogs] = useState<SecurityThreatLog[]>([]);
@@ -145,13 +159,7 @@ export default function SecurityPage() {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    {log.admin_action_taken ? (
-                                        <span className="text-green-600 flex items-center gap-1">
-                                            <CheckCircle className="w-4 h-4" /> {log.admin_action_taken}
-                                        </span>
-                                    ) : (
-                                        <span className="text-gray-400 italic">Unreviewed</span>
-                                    )}
+                                    {getActionBadge(log.admin_action_taken)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button
@@ -260,10 +268,13 @@ export default function SecurityPage() {
                             {selectedLog.admin_action_taken && (
                                 <div className="border-t pt-6 mt-2">
                                     <h4 className="text-sm font-bold text-gray-800 mb-2">Resolution Status</h4>
-                                    <div className="bg-gray-100 p-3 rounded text-sm flex justify-between items-center">
-                                        <span>Action Taken: <strong>{selectedLog.admin_action_taken}</strong></span>
+                                    <div className="bg-gray-100 p-3 rounded-lg text-sm flex justify-between items-center border border-gray-200">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-gray-600 font-medium">Action Taken:</span>
+                                            {getActionBadge(selectedLog.admin_action_taken)}
+                                        </div>
                                         {/* In a real app we'd fetch the user email who reviewed it */}
-                                        <span className="text-gray-500 text-xs">Reviewed by: {selectedLog.reviewed_by}</span>
+                                        <span className="text-gray-500 text-xs bg-white px-2 py-1 flex items-center rounded border shadow-sm">Reviewed by: {selectedLog.reviewed_by}</span>
                                     </div>
                                 </div>
                             )}
