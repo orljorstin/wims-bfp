@@ -77,16 +77,16 @@ export default function IncidentDetailPage() {
 
     return (
         <div className="space-y-6">
-            <div className="bg-white p-6 rounded shadow">
+            <div className="bg-white p-6 rounded shadow border border-gray-300">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold mb-1">Incident #{id}</h1>
-                        <div className="text-gray-500">
+                        <h1 className="text-4xl font-black text-black mb-2">Incident #{id}</h1>
+                        <div className="text-gray-900 font-bold text-sm">
                             Reported: {new Date(incident.incident_nonsensitive_details.notification_dt).toLocaleString()}
                         </div>
                     </div>
                     <div className={`px-3 py-1 rounded font-bold ${incident.verification_status === 'VERIFIED' ? 'bg-green-100 text-green-800' :
-                            incident.verification_status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                        incident.verification_status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
                         }`}>
                         {incident.verification_status}
                     </div>
@@ -94,25 +94,25 @@ export default function IncidentDetailPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <h3 className="font-semibold text-lg border-b pb-2 mb-3">Location & Type</h3>
-                        <dl className="space-y-2">
-                            <div className="flex justify-between">
-                                <dt className="text-gray-600">Barangay:</dt>
-                                <dd className="font-medium">{incident.incident_nonsensitive_details.barangay}</dd>
+                        <h3 className="font-semibold text-xl text-black border-b border-gray-300 pb-2 mb-3">Location & Type</h3>
+                        <dl className="space-y-3">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                <dt className="text-gray-900 font-bold max-sm:mb-1">Barangay:</dt>
+                                <dd className="font-black text-black">{incident.incident_nonsensitive_details.barangay}</dd>
                             </div>
-                            <div className="flex justify-between">
-                                <dt className="text-gray-600">Category:</dt>
-                                <dd className="font-medium">{incident.incident_nonsensitive_details.general_category}</dd>
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                <dt className="text-gray-900 font-bold max-sm:mb-1">Category:</dt>
+                                <dd className="font-black text-black">{incident.incident_nonsensitive_details.general_category}</dd>
                             </div>
-                            <div className="flex justify-between">
-                                <dt className="text-gray-600">Alarm Level:</dt>
-                                <dd className="font-medium">{incident.incident_nonsensitive_details.alarm_level}</dd>
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                <dt className="text-gray-900 font-bold max-sm:mb-1">Alarm Level:</dt>
+                                <dd className="font-black text-black">{incident.incident_nonsensitive_details.alarm_level}</dd>
                             </div>
                         </dl>
                     </div>
 
                     <div>
-                        <h3 className="font-semibold text-lg border-b pb-2 mb-3">Sensitive Details</h3>
+                        <h3 className="font-semibold text-xl text-black border-b border-gray-300 pb-2 mb-3">Sensitive Details</h3>
                         {/* Sensitive details might be null/empty if RLS hides them?
                          Actually RLS mirrors access, so Validator should see them for their region.
                          Wait, RLS "Strict data minimization": "Analyst sees aggregates" but Validator needs specific privs?
@@ -120,22 +120,22 @@ export default function IncidentDetailPage() {
                          Let's assume they can see them if RLS allows.
                       */}
                         {incident.incident_sensitive_details ? (
-                            <dl className="space-y-2">
-                                <div className="flex justify-between">
-                                    <dt className="text-gray-600">Occupancy:</dt>
-                                    <dd className="font-medium">{incident.incident_sensitive_details.occupancy}</dd>
+                            <dl className="space-y-3">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                    <dt className="text-gray-900 font-bold max-sm:mb-1">Occupancy:</dt>
+                                    <dd className="font-black text-black">{incident.incident_sensitive_details.occupancy ?? 'N/A'}</dd>
                                 </div>
-                                <div className="flex justify-between">
-                                    <dt className="text-gray-600">Casualties:</dt>
-                                    <dd className="font-medium">{incident.incident_sensitive_details.casualties_count}</dd>
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                    <dt className="text-gray-900 font-bold max-sm:mb-1">Casualties:</dt>
+                                    <dd className="font-black text-black">{incident.incident_sensitive_details.casualties_count ?? 'N/A'}</dd>
                                 </div>
-                                <div className="flex justify-between">
-                                    <dt className="text-gray-600">Est. Damage:</dt>
-                                    <dd className="font-medium">{incident.incident_sensitive_details.estimated_damage}</dd>
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                    <dt className="text-gray-900 font-bold max-sm:mb-1">Est. Damage:</dt>
+                                    <dd className="font-black text-black">{incident.incident_sensitive_details.estimated_damage ?? 'N/A'}</dd>
                                 </div>
                             </dl>
                         ) : (
-                            <div className="text-gray-400 italic">Restricted or not available.</div>
+                            <div className="text-gray-900 font-bold italic">Restricted or not available.</div>
                         )}
                     </div>
                 </div>

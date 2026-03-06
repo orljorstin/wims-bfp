@@ -35,8 +35,8 @@ INSERT INTO wims.ref_cities (city_id, province_id, city_name, zip_code, is_capit
 -- Passwords are managed by Supabase Auth (GoTrue), not here.
 
 -- Test User IDs:
--- Encoder (NCR):   a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001
--- Validator (NCR): a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002
+-- Encoder (NCR):   ac90c0e1-a5a6-4332-bab1-d817cc484243
+-- Validator (NCR): 0231f88d-a873-46e2-91d5-8b48de9eb8d9
 -- Analyst (NHQ):   a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003
 -- Admin (NHQ):     a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004
 
@@ -54,8 +54,8 @@ BEGIN
     IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'auth' AND tablename = 'users') THEN
         INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, role)
         VALUES
-            ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'encoder_ncr@bfp.gov.ph', 'dummyhash', NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), 'authenticated'),
-            ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002', 'validator_ncr@bfp.gov.ph', 'dummyhash', NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), 'authenticated'),
+            ('ac90c0e1-a5a6-4332-bab1-d817cc484243', 'encoder_ncr@bfp.gov.ph', 'dummyhash', NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), 'authenticated'),
+            ('0231f88d-a873-46e2-91d5-8b48de9eb8d9', 'validator_ncr@bfp.gov.ph', 'dummyhash', NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), 'authenticated'),
             ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003', 'analyst_nhq@bfp.gov.ph', 'dummyhash', NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), 'authenticated'),
             ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'admin_nhq@bfp.gov.ph', 'dummyhash', NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), 'authenticated')
         ON CONFLICT (id) DO NOTHING;
@@ -64,8 +64,8 @@ END $$;
 
 
 INSERT INTO wims.users (user_id, username, role, assigned_region_id, is_active) VALUES
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'encoder_ncr', 'ENCODER', 1, TRUE),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002', 'validator_ncr', 'VALIDATOR', 1, TRUE),
+('ac90c0e1-a5a6-4332-bab1-d817cc484243', 'encoder_ncr', 'ENCODER', 1, TRUE),
+('0231f88d-a873-46e2-91d5-8b48de9eb8d9', 'validator_ncr', 'VALIDATOR', 1, TRUE),
 ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003', 'analyst_nhq', 'ANALYST', 1, TRUE),
 ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'admin_nhq', 'ADMIN', 1, TRUE); -- Admin assigned to NCR but effectively global via role
 
@@ -74,26 +74,36 @@ INSERT INTO wims.users (user_id, username, role, assigned_region_id, is_active) 
 
 -- Data Import Batches (NCR)
 INSERT INTO wims.data_import_batches (batch_id, region_id, uploaded_by, record_count, batch_checksum_hash, sync_status) VALUES
-(101, 1, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 5, 'sha256_dummy_hash_1', 'COMPLETED'),
-(102, 1, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 3, 'sha256_dummy_hash_2', 'PENDING'),
-(103, 1, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 10, 'sha256_dummy_hash_3', 'COMPLETED');
+(101, 1, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 5, 'sha256_dummy_hash_1', 'COMPLETED'),
+(102, 1, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 3, 'sha256_dummy_hash_2', 'PENDING'),
+(103, 1, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 10, 'sha256_dummy_hash_3', 'COMPLETED');
 
 -- Fire Incidents
 -- Statuses: DRAFT, PENDING, VERIFIED, REJECTED
 INSERT INTO wims.fire_incidents (incident_id, import_batch_id, encoder_id, region_id, verification_status, is_archived) VALUES
-(1001, 101, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 1, 'VERIFIED', FALSE),
-(1002, 101, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 1, 'PENDING', FALSE),
-(1003, 102, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 1, 'DRAFT', FALSE),
-(1004, 102, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 1, 'REJECTED', FALSE),
-(1005, 103, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 1, 'VERIFIED', TRUE); -- Archived
+(1001, 101, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'VERIFIED', FALSE),
+(1002, 101, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'PENDING', FALSE),
+(1003, 102, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'DRAFT', FALSE),
+(1004, 102, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'REJECTED', FALSE),
+(1005, 103, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'VERIFIED', TRUE), -- Archived
+(1006, 103, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'VERIFIED', FALSE),
+(1007, 101, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'VERIFIED', FALSE),
+(1008, 102, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'PENDING', FALSE),
+(1009, 103, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'VERIFIED', FALSE),
+(1010, 101, 'ac90c0e1-a5a6-4332-bab1-d817cc484243', 1, 'VERIFIED', FALSE);
 
 -- Incident Non-Sensitive Details
 INSERT INTO wims.incident_nonsensitive_details (incident_id, city_id, barangay, alarm_level, general_category, specific_type, civilian_injured, estimated_damage_php) VALUES
-(1001, 1, 'Batasan Hills', '1st Alarm', 'Structural', 'Residential', 0, 50000.00),
-(1002, 2, 'Tondo', '3rd Alarm', 'Structural', 'Commercial', 2, 1500000.00),
-(1003, 3, 'Poblacion', 'Task Force Alpha', 'Structural', 'Mixed Use', 0, 0.00), -- Draft
-(1004, 1, 'Cubao', '1st Alarm', 'Non-Structural', 'Rubbish Fire', 0, 1000.00),
-(1005, 2, 'Sampaloc', '2nd Alarm', 'Structural', 'Residential', 1, 200000.00);
+(1001, 1, 'Batasan Hills', '1st Alarm', 'STRUCTURAL', 'Residential', 0, 50000.00),
+(1002, 2, 'Tondo', '3rd Alarm', 'STRUCTURAL', 'Mercantile', 2, 1500000.00),
+(1003, 3, 'Poblacion', 'Task Force Alpha', 'STRUCTURAL', 'Mixed Occupancies', 0, 0.00), -- Draft
+(1004, 1, 'Cubao', '1st Alarm', 'NON_STRUCTURAL', 'Rubbish Fire', 0, 1000.00),
+(1005, 2, 'Sampaloc', '2nd Alarm', 'STRUCTURAL', 'Single and Two Family Dwelling', 1, 200000.00),
+(1006, 3, 'Makati CBD', '1st Alarm', 'STRUCTURAL', 'Business', 0, 50000.00),
+(1007, 1, 'EDSA', '2nd Alarm', 'VEHICULAR', 'Automobile', 1, 300000.00),
+(1008, 2, 'Port Area', '3rd Alarm', 'VEHICULAR', 'Truck', 0, 1500000.00),
+(1009, 3, 'Forbes Park', '1st Alarm', 'NON_STRUCTURAL', 'Grass Fire', 0, 5000.00),
+(1010, 1, 'Diliman', 'Task Force Bravo', 'STRUCTURAL', 'Educational', 0, 5000000.00);
 
 
 -- Incident Sensitive Details (PII)
@@ -103,7 +113,12 @@ INSERT INTO wims.incident_sensitive_details (incident_id, caller_name, caller_nu
 (1002, 'Maria Clara', '09187654321', '123 Rizal Ave, Tondo', 'Suspected electrical overload...', 'Under Investigation'),
 (1003, 'Jose Rizal', '09190000000', '456 JP Rizal St, Makati', 'Smoke verified, false alarm...', 'Draft Assessment'),
 (1004, 'Andres B', '09201112222', 'Aurora Blvd, Cubao', 'Small rubbish fire near mrt...', 'Rejected'),
-(1005, 'Emilio A', '09213334444', '789 España Blvd, Sampaloc', 'Old house fire...', 'Resolved');
+(1005, 'Emilio A', '09213334444', '789 España Blvd, Sampaloc', 'Old house fire...', 'Resolved'),
+(1006, 'Lapu Lapu', '09224445555', 'Ayala Ave, Makati', 'Office building fire alarm...', 'Resolved'),
+(1007, 'Gabriela S', '09235556666', 'EDSA, Quezon City', 'Car caught fire on highway...', 'Under Investigation'),
+(1008, 'Antonio L', '09246667777', 'Pier 4, Port Area', 'Cargo truck engine fire...', 'Resolved'),
+(1009, 'Melchora A', '09257778888', 'McKinley Rd, Forbes Park', 'Dry grass burning near wall...', 'Resolved'),
+(1010, 'Apolinario M', '09268889999', 'UP Campus, Diliman', 'Laboratory chemicals reacted...', 'Resolved');
 
 
 -- Involved Parties & Responding Units
@@ -113,7 +128,12 @@ INSERT INTO wims.involved_parties (incident_id, full_name, involvement_type, age
 
 INSERT INTO wims.responding_units (incident_id, station_name, engine_number, responder_type, arrival_dt) VALUES
 (1001, 'Batasan Fire Station', 'E-123', 'BFP', NOW() - INTERVAL '1 hour'),
-(1002, 'Tondo Fire Station', 'E-456', 'BFP', NOW() - INTERVAL '2 hours');
+(1002, 'Tondo Fire Station', 'E-456', 'BFP', NOW() - INTERVAL '2 hours'),
+(1006, 'Makati Fire Station', 'E-789', 'BFP', NOW() - INTERVAL '5 hours'),
+(1007, 'QC Fire Station', 'E-333', 'BFP', NOW() - INTERVAL '6 hours'),
+(1008, 'Manila Fire Station', 'E-111', 'BFP', NOW() - INTERVAL '7 hours'),
+(1009, 'Makati Fire Station', 'E-222', 'BFP', NOW() - INTERVAL '8 hours'),
+(1010, 'Diliman Fire Station', 'E-444', 'BFP', NOW() - INTERVAL '9 hours');
 
 
 -- 4. Logs & Audit Trails
@@ -129,9 +149,14 @@ INSERT INTO wims.security_threat_logs (timestamp, source_ip, destination_ip, sur
 
 -- System Audit Trails
 INSERT INTO wims.system_audit_trails (user_id, action_type, table_affected, record_id, ip_address, user_agent, timestamp) VALUES
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'LOGIN', 'auth', NULL, '192.168.1.50', 'Mozilla/5.0...', NOW() - INTERVAL '3 hours'),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'INSERT', 'fire_incidents', 1001, '192.168.1.50', 'Mozilla/5.0...', NOW() - INTERVAL '2 hours'),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002', 'LOGIN', 'auth', NULL, '192.168.1.51', 'Mozilla/5.0...', NOW() - INTERVAL '1 hour'),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002', 'UPDATE', 'fire_incidents', 1001, '192.168.1.51', 'Mozilla/5.0...', NOW() - INTERVAL '50 minutes'),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'LOGIN', 'auth', NULL, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '10 minutes');
+('ac90c0e1-a5a6-4332-bab1-d817cc484243', 'LOGIN', 'auth', NULL, '192.168.1.50', 'Mozilla/5.0...', NOW() - INTERVAL '3 hours'),
+('ac90c0e1-a5a6-4332-bab1-d817cc484243', 'INSERT', 'fire_incidents', 1001, '192.168.1.50', 'Mozilla/5.0...', NOW() - INTERVAL '2 hours'),
+('0231f88d-a873-46e2-91d5-8b48de9eb8d9', 'LOGIN', 'auth', NULL, '192.168.1.51', 'Mozilla/5.0...', NOW() - INTERVAL '1 hour'),
+('0231f88d-a873-46e2-91d5-8b48de9eb8d9', 'UPDATE', 'fire_incidents', 1001, '192.168.1.51', 'Mozilla/5.0...', NOW() - INTERVAL '50 minutes'),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'LOGIN', 'auth', NULL, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '10 minutes'),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'INSERT', 'fire_incidents', 1006, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '9 minutes'),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'INSERT', 'fire_incidents', 1007, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '8 minutes'),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'INSERT', 'fire_incidents', 1008, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '7 minutes'),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'INSERT', 'fire_incidents', 1009, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '6 minutes'),
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'INSERT', 'fire_incidents', 1010, '10.0.0.100', 'Mozilla/5.0...', NOW() - INTERVAL '5 minutes');
 

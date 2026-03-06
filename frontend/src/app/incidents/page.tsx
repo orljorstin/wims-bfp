@@ -178,38 +178,38 @@ export default function IncidentsPage() {
 
                 <div className="overflow-x-auto border rounded-lg">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-gray-200 text-gray-900 border-b-2 border-gray-300 uppercase text-xs font-bold tracking-wider rounded-t-lg">
+                        <thead className="bg-gray-200 text-black border-b-2 border-gray-400 uppercase text-xs font-black tracking-wider rounded-t-lg">
                             <tr>
-                                <th className="p-3">ID</th>
-                                <th className="p-3">Date</th>
-                                <th className="p-3">Region</th>
-                                <th className="p-3">Category</th>
-                                <th className="p-3">Location</th>
-                                <th className="p-3">Status</th>
+                                <th className="p-3 border-r border-gray-300">ID</th>
+                                <th className="p-3 border-r border-gray-300">Date</th>
+                                <th className="p-3 border-r border-gray-300">Region</th>
+                                <th className="p-3 border-r border-gray-300">Category</th>
+                                <th className="p-3 border-r border-gray-300">Location</th>
+                                <th className="p-3 border-r border-gray-300">Status</th>
                                 <th className="p-3">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="text-sm text-gray-700">
+                        <tbody className="text-sm text-gray-900 font-medium">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={7} className="p-8 text-center text-gray-500">
-                                        <Loader2 className="animate-spin inline-block mb-2 w-6 h-6" /> <br />
+                                    <td colSpan={7} className="p-8 text-center text-gray-900 font-bold">
+                                        <Loader2 className="animate-spin inline-block mb-2 w-6 h-6 text-black" /> <br />
                                         Loading incidents...
                                     </td>
                                 </tr>
                             ) : incidents.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="p-8 text-center text-gray-500 bg-gray-50/50">
+                                    <td colSpan={7} className="p-8 text-center text-gray-900 font-bold bg-gray-50/50">
                                         <div className="flex flex-col items-center justify-center">
-                                            <Filter className="w-8 h-8 text-gray-300 mb-2" />
+                                            <Filter className="w-8 h-8 text-gray-700 mb-2" />
                                             <p>No incidents found matching current filters.</p>
-                                            {hasFilters && <Link href="/incidents" className="text-red-600 hover:underline mt-1 text-xs">Clear Filters</Link>}
+                                            {hasFilters && <Link href="/incidents" className="text-red-700 font-black hover:underline mt-1 text-xs">Clear Filters</Link>}
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
                                 incidents.map((inc) => (
-                                    <tr key={inc.incident_id} className="border-b hover:bg-red-50 transition-colors">
+                                    <tr key={inc.incident_id} className="border-b border-gray-300 hover:bg-gray-100 transition-colors">
                                         <td className="p-3 font-mono text-xs">{inc.incident_id}</td>
                                         <td className="p-3 whitespace-nowrap">
                                             {new Date(inc.incident_nonsensitive_details.notification_dt).toLocaleDateString()}
@@ -244,7 +244,7 @@ export default function IncidentsPage() {
                     </table>
                 </div>
 
-                <div className="text-xs text-gray-400 text-center pt-2">
+                <div className="text-sm text-black font-bold text-center pt-2">
                     Showing last {incidents.length} records.
                 </div>
             </div>
