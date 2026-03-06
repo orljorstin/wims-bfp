@@ -208,19 +208,19 @@ export default function SecurityPage() {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <span className="block text-gray-500 text-xs uppercase">Source IP</span>
-                                    <span className="font-mono font-medium">{selectedLog.source_ip}</span>
+                                    <span className="font-mono font-medium text-black">{selectedLog.source_ip}</span>
                                 </div>
                                 <div>
                                     <span className="block text-gray-500 text-xs uppercase">Destination IP</span>
-                                    <span className="font-mono font-medium">{selectedLog.destination_ip}</span>
+                                    <span className="font-mono font-medium text-black">{selectedLog.destination_ip}</span>
                                 </div>
                                 <div>
                                     <span className="block text-gray-500 text-xs uppercase">Suricata SID</span>
-                                    <span className="font-mono font-medium">{selectedLog.suricata_sid}</span>
+                                    <span className="font-mono font-medium text-black">{selectedLog.suricata_sid}</span>
                                 </div>
                                 <div>
                                     <span className="block text-gray-500 text-xs uppercase">Timestamp</span>
-                                    <span className="font-medium">{new Date(selectedLog.timestamp).toLocaleString()}</span>
+                                    <span className="font-medium text-black">{new Date(selectedLog.timestamp).toLocaleString()}</span>
                                 </div>
                             </div>
 
