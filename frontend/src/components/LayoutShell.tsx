@@ -37,7 +37,7 @@ export function LayoutShell({ children }: { children: ReactNode }) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+        <div className="min-h-screen bg-theme-surface-subtle flex flex-col font-sans">
             <Header />
 
             {/* Sub-header for User Controls - MOVED TO HEADER */}
