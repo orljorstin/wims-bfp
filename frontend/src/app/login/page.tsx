@@ -68,7 +68,11 @@ export default function LoginPage() {
         const redirectUri = window.location.origin + '/api/auth/callback';
         
         // Note: For Next_PUBLIC_AUTH_API_URL, do not hardcode per requirements
-        const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:8080/realms/bfp';
+        const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL;
+        if (!authApiUrl) {
+            console.error('CRITICAL: NEXT_PUBLIC_AUTH_API_URL is missing');
+            return;
+        }
         const authUrl = new URL(`${authApiUrl}/protocol/openid-connect/auth`);
         
         authUrl.searchParams.append('response_type', 'code');
