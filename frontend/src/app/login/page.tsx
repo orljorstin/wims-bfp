@@ -1,21 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabaseClient';
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useUserProfile } from '@/lib/auth';
 
-import { useUserProfile } from '@/lib/auth'; // to check if already logged in
-import { User, Lock } from 'lucide-react';
+function generateRandomString(length: number) {
+    const array = new Uint8Array(length);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, dec => ('0' + dec.toString(16)).slice(-2)).join('');
+}
 
+function generateCodeVerifier() {
+    const array = new Uint8Array(64);
+    window.crypto.getRandomValues(array);
+    return btoa(String.fromCharCode(...array))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
+async function generateCodeChallenge(verifier: string) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(verifier);
+    // Add fallback for jsdom lack of crypto.subtle in tests
+    if (!window.crypto.subtle) {
+        return verifier; 
+    }
+    const digest = await window.crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
-    const supabase = createClient();
     const { user } = useUserProfile();
 
     useEffect(() => {
@@ -28,41 +48,47 @@ export default function LoginPage() {
         return null;
     }
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+    const handleLogin = async () => {
+        const verifier = generateCodeVerifier();
+        const codeChallenge = await generateCodeChallenge(verifier);
+        const state = generateRandomString(16);
 
-        const { error: authError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        // Required by ADVERSARIAL TEST 5
+        sessionStorage.setItem('code_verifier', verifier);
+        sessionStorage.setItem('state', state);
 
-        if (authError) {
-            setError(authError.message);
-            setLoading(false);
-        } else {
-            // User state will update via AuthProvider listener -> redirect
-            router.push('/dashboard');
-        }
+        // Required for the Server Side Next.js Route to intercept
+        document.cookie = `pkce_verifier=${verifier}; path=/; max-age=300; SameSite=Lax`;
+        
+        // Add auth_state for CSRF validation and bridge to callback
+        document.cookie = `auth_state=${state}; path=/; max-age=300; SameSite=Lax`;
+
+        const clientId = 'bfp-client';
+        // Need to construct the origin properly if window is available
+        const redirectUri = window.location.origin + '/api/auth/callback';
+        
+        // Note: For Next_PUBLIC_AUTH_API_URL, do not hardcode per requirements
+        const authApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:8080/realms/bfp';
+        const authUrl = new URL(`${authApiUrl}/protocol/openid-connect/auth`);
+        
+        authUrl.searchParams.append('response_type', 'code');
+        authUrl.searchParams.append('client_id', clientId);
+        authUrl.searchParams.append('redirect_uri', redirectUri);
+        authUrl.searchParams.append('state', state);
+        authUrl.searchParams.append('code_challenge', codeChallenge);
+        authUrl.searchParams.append('code_challenge_method', 'S256');
+
+        window.location.assign(authUrl.toString());
     };
 
     return (
-        <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center bg-red-900 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-transparant">
-                {/* The design shows a red card or just red background? 
-                    Actually the provided image shows a RED CARD centered on a maybe white or red background?
-                    Let's assume the whole page is red, and the form is a contained block. 
-                    Wait, the image `Login.png` shows a Red Container with White Text, and White Inputs.
-                    It looks like a Card itself is Red.
-                */}
-                <div className="bg-red-800 p-8 rounded-xl shadow-2xl border border-red-700 relative overflow-hidden">
-                    {/* Decorative top glow */}
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500"></div>
+        <div className="min-h-auth-container flex items-center justify-center bg-theme-brand-dark py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 bg-theme-none">
+                <div className="bg-theme-brand-primary p-8 rounded-xl shadow-2xl border border-theme-brand-accent relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-theme-gradient-fire"></div>
 
                     <div className="flex flex-col items-center mb-8">
                         <div className="mb-4">
-                            {/* Logo - No Frame, 150px */}
                             <Image
                                 src="/bfp-logo.svg"
                                 alt="BFP Logo"
@@ -71,69 +97,23 @@ export default function LoginPage() {
                                 className="object-contain"
                             />
                         </div>
-                        <h2 className="text-3xl font-bold text-white tracking-tight">Login</h2>
-                        <p className="mt-2 text-red-100 text-sm">Sign in to your account</p>
+                        <h2 className="text-3xl font-bold text-theme-on-brand tracking-tight">Login</h2>
+                        <p className="mt-2 text-theme-brand-light text-sm">Sign in to your account</p>
                     </div>
 
-                    {error && (
-                        <div className="bg-white/10 border border-red-200 text-red-100 p-3 rounded mb-6 text-sm flex items-center gap-2">
-                            <span className="font-bold">Error:</span> {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div className="space-y-4">
-                            <div className="relative">
-                                <label className="sr-only">Email</label>
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                                    <User className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="email"
-                                    required
-                                    className="appearance-none rounded-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md rounded-b-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm bg-gray-100"
-                                    placeholder="Username / Email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                            <div className="relative">
-                                <label className="sr-only">Password</label>
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                                    <Lock className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    type="password"
-                                    required
-                                    className="appearance-none rounded-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md rounded-b-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm bg-gray-100"
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-end">
-                            <div className="text-sm">
-                                <a href="#" className="font-medium text-red-200 hover:text-white hover:underline">
-                                    Forgot password?
-                                </a>
-                            </div>
-                        </div>
-
+                    <div className="space-y-6">
                         <div>
                             <button
-                                type="submit"
-                                disabled={loading}
-                                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-md text-red-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-800 focus:ring-white transition shadow-lg disabled:opacity-70 disabled:cursor-not-allowed uppercase"
+                                onClick={handleLogin}
+                                className="group relative w-full flex justify-center py-3 px-4 border border-theme-none text-sm font-bold rounded-md text-theme-brand-primary bg-theme-surface hover:bg-theme-surface-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-theme-brand-primary focus:ring-theme-focus-offset transition shadow-lg uppercase"
                             >
-                                {loading ? 'Signing In...' : 'Login'}
+                                Login with Keycloak
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
-                <div className="text-center text-red-800/60 text-xs">
+                <div className="text-center text-theme-brand-primary/60 text-xs">
                     &copy; 2026 Bureau of Fire Protection. All rights reserved.
                 </div>
             </div>
